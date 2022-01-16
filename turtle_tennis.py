@@ -1,18 +1,51 @@
+from turtle import Screen, Turtle
 import turtle
 
-# Screen
-s = turtle.Screen()    
-s.bgcolor("blue")
-s.setup(1000, 600)
-s.bgpic("bgtt.png")
 
-score = turtle.Turtle()
-score.color("white")
-score.penup()
-score.hideturtle()
-score.goto(0, 260)
+class Game_Screen:
+    def __init__(self, size, bgpic):
+        self = Screen()
+        self.setup(size[0], size[1])
+        self.bgpic(bgpic)
 
-median = turtle.Turtle()
+sc = Game_Screen([1000,600], "bgtt.png")
+
+class Message(Turtle):
+    def __init__(self, text):
+        super().__init__()
+        self.text = text
+        self.penup()
+        self.hideturtle()
+        self.color("white")
+        self.ink()
+    def ink(self):
+        self.clear()
+        self.write(self.text,
+                   align="center", font=("Courier", 24, "bold"))
+    def locate(self, goto):
+        # self.clear()
+        self.goto(goto)
+        self.ink()
+
+class Score(Message):
+    store = []
+    def __init__(self):
+        self.clean()
+        super().__init__("Player 1: {}   Player 2: {}".format(p1.score, p2.score))
+        self.locate([0, 260])
+        Score.store.append(self)
+    def clean(self):
+        for i in self.store:
+            i.clear()
+        Score.store.clear()
+
+# score = Turtle()
+# score.color("white")
+# score.penup()
+# score.hideturtle()
+# score.goto(0, 260)
+
+median = Turtle()
 median.goto(0, 0)
 median.shapesize(stretch_wid=20, stretch_len=.2)
 median.shape("square")
@@ -22,7 +55,7 @@ median.color("white")
 class Paddle:
     players = []
     def __init__(self, pos, color, keyUp, keyDown):
-        self.turtle = turtle.Turtle()
+        self.turtle = Turtle()
         self.turtle.speed(0)
         self.turtle.color(color)
         self.turtle.shape("square")
@@ -49,7 +82,7 @@ class Paddle:
 p1 = Paddle([-400, 0], "white", "Up", "Down")
 p2 = Paddle([400, 0], "white", "r", "f")
 
-class Ball(turtle.Turtle):
+class Ball(Turtle):
     balls = []
     def __init__(self, color, goto, movement):
         super().__init__()
@@ -116,9 +149,12 @@ def onScore(b, d, player):
     updateScore()
     
 def updateScore():
-    score.clear()
-    score.write("Player 1: {}   Player 2: {}".format(p1.score, p2.score),
-                align="center", font=("Courier", 24, "bold"))
+    score.text = "Player 1: {}   Player 2: {}".format(p1.score, p2.score)
+    score.ink()
+    # score.__init__()
+    # score.clear()
+    # score.write("Player 1: {}   Player 2: {}".format(p1.score, p2.score),
+    #             align="center", font=("Courier", 24, "bold"))
 
 # Game Loops
 def play():
@@ -136,10 +172,11 @@ def play():
                 b.dy *= 1.2
                 b.spin *= 1.2
     paddleStop()
-    s.ontimer(play, 10)
+    turtle.ontimer(play, 10)
+
             
 turtle.listen()
-updateScore()
+score = Score()
 play()
     
 turtle.mainloop() # Last line, keeps tkinter window open
